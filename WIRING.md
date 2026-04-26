@@ -35,6 +35,8 @@
 
 ## 1. ST7789 SPI LCD (240×240)
 
+> ⚠️ **Polarity warning:** Pin 1 = 3V3, Pin 2 = GND. Swapping these destroys the LCD instantly. Double-check before powering on.
+
 | LCD Pin | Symbol   | → | Pico Physical | GPIO  | Code constant   |
 |---------|----------|---|---------------|-------|-----------------|
 | 1       | 3V3      | → | 36            | 3V3   | —               |
@@ -120,17 +122,16 @@
 
 ---
 
-## 7. SD Card (Shared SPI Bus)
+## 7. Peripheral Power Switch (TCK107AF)
 
 | Signal     | → | Pico Physical | GPIO | Code constant    |
 |------------|---|---------------|------|------------------|
-| SD_CS (/CE)| → | 16            | GP12 | `LCD_SD_EN  12`  |
-| SD_CLK     | → | 24            | GP18 | shared SPI0 SCK  |
-| SD_MOSI    | → | 25            | GP19 | shared SPI0 TX   |
-| SD_MISO    | → | 21            | GP16 | shared SPI0 RX   |
+| CTRL       | → | 16            | GP12 | `LCD_SD_EN  12`  |
 
-> LCD CS and SD CS must not be asserted simultaneously.
-> Keep `LCD_SD_EN` HIGH (deselected) when communicating with the LCD.
+> GP12 drives the **CTRL pin of a TCK107AF load switch**, which gates the 3.3V
+> supply to all peripherals (LCD, buttons, amp).
+> **Active-HIGH**: drive HIGH to power peripherals on, LOW to cut all 3.3V.
+> Must be set HIGH before any peripheral (SPI, I2C, buttons) is used.
 
 ---
 
@@ -147,7 +148,7 @@
 | 11       | GP8       | I2C_SDA      | I/O       |
 | 12       | GP9       | I2C_SCL      | Out       |
 | 15       | GP11      | AMP_EN       | Out       |
-| 16       | GP12      | LCD_SD_EN    | Out       |
+| 16       | GP12      | PWR_EN (TCK107AF CTRL, active-HIGH) | Out |
 | 19       | GP14      | AUDIO_PWM    | Out       |
 | 21       | GP16      | LCD_MISO     | In        |
 | 22       | GP17      | LCD_CS       | Out       |

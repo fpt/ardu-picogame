@@ -47,10 +47,10 @@
 #define BTN_DOWN   1
 #define BTN_LEFT   2
 #define BTN_RIGHT  3
-#define BTN_A      4
-#define BTN_B      5
-#define BTN_START  6
-#define BTN_SELECT 7
+#define BTN_START  4
+#define BTN_SELECT 5
+#define BTN_A      6
+#define BTN_B      7
 
 // ── Battery divider ratio — adjust if your PCB uses a different ratio ────────
 // Example: 100k + 100k divider → ratio 2.0 (measures up to 6.6V for LiPo)
@@ -112,13 +112,10 @@ void setup() {
     pinMode(AMP_EN, OUTPUT);
     digitalWrite(AMP_EN, HIGH);
 
-    // SD card CS — keep deselected
+    // GP12 = TCK107AF load switch enable, active-HIGH.
+    // HIGH = 3.3V power ON to all peripherals (LCD, buttons, amp).
     pinMode(LCD_SD_EN, OUTPUT);
     digitalWrite(LCD_SD_EN, HIGH);
-
-    // Backlight
-    pinMode(LCD_BL, OUTPUT);
-    digitalWrite(LCD_BL, HIGH);
 
     // Remap SPI0 to LCD pins before tft.init()
     SPI.setSCK(LCD_CLK);
@@ -128,7 +125,7 @@ void setup() {
     tft.init(240, 240);
     tft.setSPISpeed(40000000);
     tft.setRotation(2);
-    tft.fillScreen(COL_BG);
+    tft.fillScreen(ST77XX_RED); // bright red — any pixels = SPI is working
 
     // Splash screen
     tft.setTextColor(COL_TEXT);
