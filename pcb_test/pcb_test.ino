@@ -57,6 +57,9 @@
 // If BAT_ADC is wired directly (3.3V max): ratio = 1.0
 #define BAT_DIVIDER_RATIO  2.0f
 
+// Audio duty cycle: 0–255 (128 = 50% = loudest). Lower = quieter.
+#define AUDIO_DUTY  24
+
 // ── Colours ──────────────────────────────────────────────────────────────────
 #define COL_BG      ST77XX_BLACK
 #define COL_ACTIVE  ST77XX_GREEN
@@ -139,9 +142,9 @@ void setup() {
     delay(600);
 
     // Startup beep: two rising tones
-    tone(AUDIO_PWM, 880);  delay(100);
-    tone(AUDIO_PWM, 1760); delay(100);
-    noTone(AUDIO_PWM);
+    analogWriteFreq(880);  analogWrite(AUDIO_PWM, AUDIO_DUTY); delay(100);
+    analogWriteFreq(1760); analogWrite(AUDIO_PWM, AUDIO_DUTY); delay(100);
+    analogWrite(AUDIO_PWM, 0);
 
     tft.fillScreen(COL_BG);
 
@@ -222,15 +225,20 @@ void loop() {
     }
 
     // ── Audio: each button plays a distinct note ───────────────────────────
-    if      (pressed(btns, BTN_A))      tone(AUDIO_PWM, 440);
-    else if (pressed(btns, BTN_B))      tone(AUDIO_PWM, 494);
-    else if (pressed(btns, BTN_UP))     tone(AUDIO_PWM, 523);
-    else if (pressed(btns, BTN_DOWN))   tone(AUDIO_PWM, 587);
-    else if (pressed(btns, BTN_LEFT))   tone(AUDIO_PWM, 659);
-    else if (pressed(btns, BTN_RIGHT))  tone(AUDIO_PWM, 698);
-    else if (pressed(btns, BTN_START))  tone(AUDIO_PWM, 784);
-    else if (pressed(btns, BTN_SELECT)) tone(AUDIO_PWM, 880);
-    else                                noTone(AUDIO_PWM);
+    {
+        uint32_t freq = 0;
+        if      (pressed(btns, BTN_A))      freq = 440;
+        else if (pressed(btns, BTN_B))      freq = 494;
+        else if (pressed(btns, BTN_UP))     freq = 523;
+        else if (pressed(btns, BTN_DOWN))   freq = 587;
+        else if (pressed(btns, BTN_LEFT))   freq = 659;
+        else if (pressed(btns, BTN_RIGHT))  freq = 698;
+        else if (pressed(btns, BTN_START))  freq = 784;
+        else if (pressed(btns, BTN_SELECT)) freq = 880;
+
+        if (freq) { analogWriteFreq(freq); analogWrite(AUDIO_PWM, AUDIO_DUTY); }
+        else       analogWrite(AUDIO_PWM, 0);
+    }
 
     delay(20);
 }
