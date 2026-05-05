@@ -27,7 +27,7 @@
 #define PWR_BTN   5   // GP5,  Pin 7  — power button (active-low)
 
 #define AMP_EN    11  // GP11, Pin 15 — amplifier enable (HIGH = on)
-#define LCD_SD_EN 12  // GP12, Pin 16 — SD card CS (keep HIGH to deselect)
+#define LCD_SD_EN 12  // GP12, Pin 16 — TCK107AF CTRL, active-HIGH (powers all peripherals)
 #define AUDIO_PWM 14  // GP14, Pin 19 — PWM audio out
 
 // SPI0 — LCD
@@ -128,7 +128,7 @@ void setup() {
     tft.init(240, 240);
     tft.setSPISpeed(40000000);
     tft.setRotation(2);
-    tft.fillScreen(ST77XX_RED); // bright red — any pixels = SPI is working
+    tft.fillScreen(COL_BG);
 
     // Splash screen
     tft.setTextColor(COL_TEXT);
